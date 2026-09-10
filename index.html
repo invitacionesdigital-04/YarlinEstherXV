@@ -4,10 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rafael y Juana - Invitación de Boda</title>
-    <link rel="preload" as="image" href="assets/background-night.png">
+    <link rel="preload" as="image" href="https://i.ibb.co/VWk9DxJL/boda-imagen.jpg">
     <link rel="stylesheet" href="CCSB.css">
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <style>
+        /* Carrusel: 3 imágenes simultáneamente con foto central destacada */
+        .carousel-track-container {
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease;
+            width: 100%;
+            overflow: visible;
+        }
+        .carousel-item {
+            flex: 0 0 33.333%; /* 3 imágenes por fila en PC */
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0; /* usamos gap del track para separación */
+        }
+        .carousel-item img {
+            max-width: 100%;
+            height: 100% !important;
+            object-fit: cover;
+            border-radius: 0;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
 
+        /* Hacer las fotos visualmente menos anchas manteniendo 3 por fila */
+        .framed-photo {
+            width: 90% !important;
+            height: 100% !important;
+            margin: 0 auto;
+            object-fit: cover !important;
+            background: #8B5E3C !important;
+            border: 10px solid #1F1F1F !important;
+            border-bottom-width: 38px !important;
+        }
+
+        @media (min-width: 769px) {
+            .carousel-item.is-center .framed-photo {
+                transform: scale(1.12) rotate(-0.2deg);
+                box-shadow: 0 34px 68px rgba(0,0,0,0.4);
+            }
+        }
+        
+        /* Mobile: una imagen centrada */
+        @media (max-width: 768px) {
+            .carousel-item {
+                flex: 0 0 100% !important; /* 1 imagen por vista en móvil */
+                padding: 0 6px !important;
+                height: 380px !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+            .carousel-item img {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: 380px !important;
+                object-fit: cover !important;
+                transform: none !important;
+            }
+            .framed-photo {
+                width: 100% !important;
+                border-width: 6px !important;
+                border-bottom-width: 20px !important;
+            }
+            
+            .carousel-track-container {
+                height: auto !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .carousel-item img {
+                max-height: 320px !important;
+                height: 300px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                object-fit: cover !important;
+                border-radius: 0;
+                transform: none !important;
+            }
+            .framed-photo {
+                width: 100% !important;
+                border-width: 4px !important;
+                border-bottom-width: 14px !important;
+            }
+            
+            .carousel-item {
+                flex: 0 0 100% !important;
+                padding: 0 8px !important;
+                height: 320px !important;
+            }
+            
+            .carousel-track-container {
+                height: auto !important;
+            }
+        }
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #fff;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 2;
+            padding: 0 10px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        /* Ajuste temporal: mantener altura visible sin tocar el attachment */
+        @media (min-width: 1025px) {
+            .hero-section {
+                background-image: url('assets/background.png') !important;
+            }
+        }
+
+    </style>
 </head>
 <body>
     <div class="main-center">
@@ -37,16 +166,14 @@
 
         <!-- Hero Section -->
         <div class="hero-section">
-            <img class="hero-bg" src="assets/background-night.png" alt="Portada boda Rafael y Juana">
+            <img class="hero-deco hero-leaves" src="assets/leaves.png" alt="" aria-hidden="true">
+            <img class="hero-deco hero-moon" src="assets/moon.png" alt="" aria-hidden="true">
+            <img class="hero-deco hero-lantern" src="assets/lantern.png" alt="" aria-hidden="true">
+            <img class="hero-deco hero-princess" src="assets/princess.png" alt="" aria-hidden="true">
+            <img class="hero-deco hero-frog" src="assets/frog-main.png" alt="" aria-hidden="true">
+            <img class="hero-deco hero-firefly" src="assets/firefly.png" alt="" aria-hidden="true">
+            <img class="hero-bg" src="assets/background.png" alt="Portada boda Rafael y Juana">
             <div class="hero-overlay"></div>
-            <div class="decor moon"><img src="assets/moon.png" alt=""></div>
-            <div class="decor lantern"><img src="assets/lantern.png" alt=""></div>
-            <div class="decor leaves-top"><img src="assets/leaves.png" alt=""></div>
-            <div class="decor firefly"><img src="assets/firefly.png" alt=""></div>
-            <div class="decor princess"><img src="assets/princess.png" alt=""></div>
-            <div class="decor frog-main"><img src="assets/frog-main.png" alt=""></div>
-            <div class="decor frog-small"><img src="assets/frog-small.png" alt=""></div>
-            <div class="decor water-lotus"><img src="assets/water-lilies.png" alt=""></div>
             <div class="hero-content">
                 <div class="hero-text">
                     <div class="date">31.12.2026</div>
@@ -67,8 +194,8 @@
         <!-- Content -->
         <div class="content">
         <!-- Countdown -->
-        <section class="countdown-section">
-            <div class="section-decor section-lotus"><img src="assets/lotus.png" alt=""></div>
+        <section class="countdown-section themed-section">
+            <img class="section-deco deco-frog" src="assets/frog-small.png" alt="" aria-hidden="true">
             <h2 class="section-title">Falta</h2>
             <div class="countdown-container">
                 <div class="countdown-item">
@@ -91,9 +218,8 @@
         </section>
 
         <!-- Ceremony & Celebration -->
-        <section class="events-section">
-            <div class="section-decor section-lantern"><img src="assets/lantern.png" alt=""></div>
-            <div class="section-decor section-leaves"><img src="assets/leaves.png" alt=""></div>
+        <section class="events-section themed-section">
+            <img class="section-deco deco-lantern" src="assets/lantern.png" alt="" aria-hidden="true">
             <div class="events-container">
                 <!-- Ceremony -->
                 <div class="event-card">
@@ -144,8 +270,8 @@
         </section>
 
         <!-- Photo Gallery -->
-        <section class="gallery-section">
-            <div class="section-decor section-lotus"><img src="assets/lotus.png" alt=""></div>
+        <section class="gallery-section themed-section">
+            <img class="section-deco deco-lilies" src="assets/lotus.png" alt="" aria-hidden="true">
             <div class="gallery-container">
                 <h2 class="section-title">Retratos de Nuestro Amor</h2>
                 <p class="section-subtitle">Un minuto, un segundo, un instante que queda en la eternidad</p>
@@ -194,9 +320,8 @@
         </section>
 
         <!-- Party Information -->
-        <section class="party-section">
-            <div class="section-decor section-frog"><img src="assets/frog-small.png" alt=""></div>
-            <div class="section-decor section-leaves"><img src="assets/leaves.png" alt=""></div>
+        <section class="party-section themed-section">
+            <img class="section-deco deco-croc" src="assets/crocodile.png" alt="" aria-hidden="true">
             <div class="party-container">
                 <h2 class="section-title">Fiesta</h2>
                 <p class="section-subtitle">Hagamos juntos una fiesta épica. Aquí algunos detalles a tener en cuenta.</p>
@@ -248,8 +373,8 @@
         </section>
 
         <!-- Gifts -->
-        <section class="gifts-section">
-            <div class="section-decor section-croc"><img src="assets/crocodile.png" alt=""></div>
+        <section class="gifts-section themed-section">
+            <img class="section-deco deco-lotus" src="assets/lotus.png" alt="" aria-hidden="true">
             <div class="gifts-container">
                 <h2 class="section-title">Regalos</h2>
                 <p class="section-subtitle">Si deseas regalarnos algo más que tu hermosa presencia.</p>
@@ -268,8 +393,8 @@
         </section>
 
         <!-- RSVP -->
-        <section class="rsvp-section">
-            <div class="section-decor section-lotus"><img src="assets/lotus-small.png" alt=""></div>
+        <section class="rsvp-section themed-section">
+            <img class="section-deco deco-firefly" src="assets/firefly.png" alt="" aria-hidden="true">
             <div class="rsvp-container">
                 <h2 class="section-title">Confirma tu Asistencia</h2>
                 <p class="section-subtitle">Comparte este hermoso momento con nosotros</p>
