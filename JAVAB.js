@@ -119,7 +119,7 @@ function initializeYouTubePlayer() {
     player = new YT.Player('youtube-player', {
         height: '1',
         width: '1',
-        videoId: 'jb0K64SGsfc',
+        videoId: '4XH5GCVkHK0',
         playerVars: {
             autoplay: 0,
             controls: 0,
@@ -131,7 +131,7 @@ function initializeYouTubePlayer() {
             rel: 0,
             showinfo: 0,
             iv_load_policy: 3,
-            playlist: 'jb0K64SGsfc'
+            playlist: '4XH5GCVkHK0'
         },
         events: {
             'onReady': onPlayerReady,
@@ -214,7 +214,7 @@ function updateMusicIcon() {
 
 // Countdown
 function initializeCountdown() {
-    const targetDate = new Date('2026-12-31T10:00:00').getTime();
+    const targetDate = new Date('2026-11-14T20:00:00').getTime();
     
     function updateCountdown() {
         const now = new Date().getTime();
@@ -277,7 +277,7 @@ function initializeCarousel() {
     // Auto-play del carrusel
     setInterval(() => {
         nextSlide();
-    }, 4000);
+    }, 2500);
 }
 
 function updateCarousel() {
@@ -298,16 +298,29 @@ function updateCarousel() {
         const containerWidth = Math.round(container.getBoundingClientRect().width);
         const visibleCount = Math.max(1, Math.floor((containerWidth + 1) / stepWidth));
         const maxIndex = Math.max(0, totalSlides - visibleCount);
-        if (currentSlide > maxIndex) currentSlide = 0;
-        if (currentSlide < 0) currentSlide = maxIndex;
+
+        // Detectar si esta actualización implica dar la vuelta (última foto -> primera, o viceversa)
+        let wrapped = false;
+        if (currentSlide > maxIndex) { currentSlide = 0; wrapped = true; }
+        if (currentSlide < 0) { currentSlide = maxIndex; wrapped = true; }
 
         const trackRect = track.getBoundingClientRect();
         const baseLeft = Math.round(firstRect.left - trackRect.left);
         const translateXpx = -Math.round(baseLeft + (currentSlide * stepWidth));
 
-        // Apply transform
-        track.style.transform = `translateX(${translateXpx}px)`;
-        // console.log('Carousel moved to slide:', { currentSlide, visibleCount, maxIndex, translateXpx, stepWidth, baseLeft });
+        if (wrapped) {
+            // Salto instantáneo al dar la vuelta, para que no se vea "regresando"
+            // animado hacia atrás por todas las fotos.
+            track.style.transition = 'none';
+            track.style.transform = `translateX(${translateXpx}px)`;
+            void track.offsetHeight; // forzar reflow antes de reactivar la transición
+            requestAnimationFrame(() => {
+                track.style.transition = '';
+            });
+        } else {
+            track.style.transform = `translateX(${translateXpx}px)`;
+        }
+        // console.log('Carousel moved to slide:', { currentSlide, visibleCount, maxIndex, translateXpx, stepWidth, baseLeft, wrapped });
     }
     updateSlideCounter();
     markCenterCarouselItem();
@@ -365,40 +378,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Funciones de los botones
 function openLocation(location) {
-    const addresses = {
-        ceremony: "Parroquia Nuestra Señora de Luján, Av. Pergamino 203, Santo Domingo",
-        celebration: "Salón de fiestas Avril, Av. Los Reartes 12, Santo Domingo"
-    };
-    
-    const address = addresses[location];
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    const mapsUrl = "https://maps.google.com/maps?q=18.5544490814209%2C-70.10547637939453&z=17&hl=es";
     window.open(mapsUrl, '_blank');
 }
 
-function suggestMusic() {
-    const whatsappMessage = "¡Hola! Me gustaría sugerir una canción para la playlist de la boda de Rafael y Juana 🎵";
-    const whatsappUrl = `https://wa.me/1234567890?text=${encodeURIComponent(whatsappMessage)}`;
-    window.open(whatsappUrl, '_blank');
+function uploadPhoto() {
+    const photosUrl = "https://photos.app.goo.gl/t9RiFPpbEuiEWGkJ7";
+    window.open(photosUrl, '_blank');
 }
 
 function showDressCode() {
-    showToast("Dress Code", "Elegante sport - Colores tierra y dorados son bienvenidos 👗");
+    showInfoModal(
+        "Código de Vestimenta",
+        `<p>Vestimenta formal: vestidos y trajes.</p>
+         <div class="no-green-note">
+            <span class="no-green-swatch" aria-hidden="true"></span>
+            <p>El color verde esmeralda está reservado exclusivamente para la quinceañera. Se solicita amablemente a los invitados evitar su uso.</p>
+         </div>`
+    );
 }
 
 function showTips() {
-    showToast("Tips y Notas", "La ceremonia será al aire libre. Se recomienda llegar 15 minutos antes ⛪");
+    showToast("Tips y Notas", "Te recomendamos llegar con anticipación para disfrutar cada momento de la celebración 🙏");
 }
 
 function showGifts() {
-    const message = "Hola, me gustaría información sobre los regalos para la boda de Rafael y Juana 🎁";
-    const whatsappUrl = `https://wa.me/1234567890?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    window.open("https://invitacionesdigital-04.github.io/Numerodecuentayarlin/", '_blank');
 }
 
 function confirmAttendance() {
-    const message = "¡Hola! Quiero confirmar mi asistencia a la boda de Rafael y Juana el 31 de Diciembre 💒✨";
-    const whatsappUrl = `https://wa.me/1234567890?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScyPvCaHKEQnQIyB4xulwdqBCdhXpGseGNUy3twxcIXpfLRmQ/viewform?usp=publish-editor";
+    window.open(formUrl, '_blank');
+}
+
+// Modal de información (ventana flotante reutilizable, ej. Dress Code)
+function showInfoModal(title, bodyHtml) {
+    const modal = document.getElementById('infoModal');
+    const titleEl = document.getElementById('infoModalTitle');
+    const bodyEl = document.getElementById('infoModalBody');
+    if (!modal || !titleEl || !bodyEl) return;
+    titleEl.textContent = title;
+    bodyEl.innerHTML = bodyHtml;
+    modal.style.display = 'flex';
+}
+
+function closeInfoModal() {
+    const modal = document.getElementById('infoModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // Sistema de Toast
