@@ -8,34 +8,47 @@ let enableMusic = false;
 
 // Funciones globales para los botones del modal
 function enterWithMusicClick() {
-    // console.log('Función enterWithMusicClick() ejecutada');
     enableMusic = true;
     const modal = document.getElementById('welcomeModal');
     if (modal) {
         modal.style.display = 'none';
     }
-
-    // El player se precarga desde DOMContentLoaded (ver loadYouTubeAPI más abajo),
-    // así que si ya está listo llamamos playVideo() de inmediato, dentro del mismo
-    // tick del click. Eso es justo lo que iOS Safari exige para permitir el audio;
-    // si el player se crea o se reproduce de forma asíncrona (fuera del gesto del
-    // usuario), iOS lo bloquea en silencio y por eso antes no sonaba en iPhone.
-    if (playerReady && player) {
-        document.getElementById('musicPlayer').style.display = 'block';
-        player.playVideo();
-        isPlaying = true;
-        updateMusicIcon();
-    }
-    // Si el player todavía no está listo (conexión lenta), onPlayerReady se
-    // encarga de reproducir apenas termine de inicializar.
+    activateMusic();
 }
 
 function enterWithoutMusicClick() {
-    // console.log('Función enterWithoutMusicClick() ejecutada');
     enableMusic = false;
     const modal = document.getElementById('welcomeModal');
     if (modal) {
         modal.style.display = 'none';
+    }
+    deactivateMusic();
+}
+
+// El player arranca SIEMPRE en mute apenas está listo (el autoplay muteado
+// nunca lo bloquea ningún navegador, incluido Safari). Elegir "con música"
+// solo necesita QUITAR el mute -- eso sí es válido dentro de un click sin
+// importar si el player ya estaba listo antes del clic o recién terminó de
+// cargar; no depende del mismo tick síncrono como sí lo exige arrancar audio
+// desde cero, que es lo que fallaba antes cuando el usuario tocaba el botón
+// antes de que la API de YouTube terminara de cargar.
+function activateMusic() {
+    const musicPlayer = document.getElementById('musicPlayer');
+    if (musicPlayer) musicPlayer.style.display = 'block';
+    if (playerReady && player) {
+        player.unMute();
+        player.playVideo();
+        isPlaying = true;
+        updateMusicIcon();
+    }
+    // Si el player todavía no está listo, onPlayerReady revisa `enableMusic`
+    // y hace el unMute() apenas se cree -- sigue sonando sin necesitar un
+    // nuevo gesto porque el video ya viene reproduciéndose (muteado) de fondo.
+}
+
+function deactivateMusic() {
+    if (playerReady && player) {
+        player.pauseVideo();
     }
 }
 
@@ -45,34 +58,19 @@ function setupModalButtons() {
     const enterWithoutMusic = document.getElementById('enterWithoutMusic');
     const modal = document.getElementById('welcomeModal');
 
-    // console.log('Configurando botones del modal...', { enterWithMusic, enterWithoutMusic, modal });
-
     if (enterWithMusic) {
         enterWithMusic.onclick = function() {
-            // console.log('Botón CON música clickeado');
             enableMusic = true;
-            if (modal) {
-                modal.style.display = 'none';
-            }
-            // Mismo arreglo que en enterWithMusicClick: reproducir de forma
-            // síncrona dentro del click si el player ya está precargado.
-            if (playerReady && player) {
-                const musicPlayer = document.getElementById('musicPlayer');
-                if (musicPlayer) musicPlayer.style.display = 'block';
-                player.playVideo();
-                isPlaying = true;
-                updateMusicIcon();
-            }
+            if (modal) modal.style.display = 'none';
+            activateMusic();
         };
     }
 
     if (enterWithoutMusic) {
         enterWithoutMusic.onclick = function() {
-            // console.log('Botón SIN música clickeado');
             enableMusic = false;
-            if (modal) {
-                modal.style.display = 'none';
-            }
+            if (modal) modal.style.display = 'none';
+            deactivateMusic();
         };
     }
 }
@@ -121,7 +119,8 @@ function initializeYouTubePlayer() {
         width: '1',
         videoId: '4XH5GCVkHK0',
         playerVars: {
-            autoplay: 0,
+            autoplay: 1,
+            mute: 1,
             controls: 0,
             disablekb: 1,
             fs: 0,
@@ -150,14 +149,23 @@ function onPlayerReady(event) {
         musicToggle.addEventListener('click', toggleMusic);
     }
 
-    // Caso borde: el usuario ya hizo click en "con música" antes de que el
-    // player terminara de inicializar (ej. conexión lenta). Lo reproducimos
-    // apenas esté listo.
-    if (enableMusic && !isPlaying) {
-        if (musicPlayer) musicPlayer.style.display = 'block';
-        event.target.playVideo();
+    // Arranca siempre muteado en cuanto está listo -- el autoplay muteado no
+    // lo bloquea ningún navegador. Así, cuando el usuario elige "con música"
+    // (haya sido antes o después de este momento), activateMusic() solo
+    // necesita quitar el mute, que sí es una acción permitida sin gesto nuevo
+    // porque el video ya está en reproducción.
+    event.target.mute();
+    event.target.playVideo();
+
+    if (enableMusic) {
+        // El usuario ya había elegido "con música" antes de que el player
+        // terminara de cargar -- lo desmuteamos apenas se puede.
+        event.target.unMute();
         isPlaying = true;
+        if (musicPlayer) musicPlayer.style.display = 'block';
         updateMusicIcon();
+    } else {
+        isPlaying = false;
     }
 }
 
