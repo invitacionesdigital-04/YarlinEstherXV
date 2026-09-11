@@ -222,7 +222,7 @@ function updateMusicIcon() {
 
 // Countdown
 function initializeCountdown() {
-    const targetDate = new Date('2026-11-14T20:00:00').getTime();
+    const targetDate = new Date('2026-11-14T17:00:00').getTime();
     
     function updateCountdown() {
         const now = new Date().getTime();
@@ -407,7 +407,11 @@ function showDressCode() {
 }
 
 function showTips() {
-    showToast("Tips y Notas", "Te recomendamos llegar con anticipación para disfrutar cada momento de la celebración 🙏");
+    showInfoModal(
+        "Tips y Notas",
+        `<p>Este es un evento exclusivo para adultos. Se solicita amablemente no asistir con niños ni acompañantes no confirmados.</p>
+         <p>Agradecemos su comprensión y esperamos contar con su presencia.</p>`
+    );
 }
 
 function showGifts() {
@@ -415,8 +419,8 @@ function showGifts() {
 }
 
 function confirmAttendance() {
-    const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScyPvCaHKEQnQIyB4xulwdqBCdhXpGseGNUy3twxcIXpfLRmQ/viewform?usp=publish-editor";
-    window.open(formUrl, '_blank');
+    const whatsappUrl = "https://wa.me/18299333797?text=Hola%2C+deseo+confirmar+que+estar%C3%A9+asistiendo+a+los+XV+de+Yarlin.+Ser%C3%A1+un+placer+compartir+este+momento+tan+especial.+%E2%9C%A8&utm_source=chatgpt.com";
+    window.open(whatsappUrl, '_blank');
 }
 
 // Modal de información (ventana flotante reutilizable, ej. Dress Code)
